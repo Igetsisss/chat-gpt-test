@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Get Your IP Address</title>
+    <style>
+      body {
+        background-color: #F8F8FF;
+        font-family: Arial, sans-serif;
+      }
+      h1 {
+        color: #1E90FF;
+        text-align: center;
+        margin-top: 50px;
+      }
+      #countdown {
+        font-size: 3em;
+        font-weight: bold;
+        text-align: center;
+        margin-top: 50px;
+      }
+      #ip {
+        font-size: 4em;
+        font-weight: bold;
+        text-align: center;
+        margin-top: 50px;
+        animation: rainbow 2s linear infinite;
+      }
+      #message {
+        font-size: 1.5em;
+        color: #1E90FF;
+        text-align: center;
+        margin-top: 50px;
+      }
+      .loader {
+        border: 16px solid #f3f3f3;
+        border-top: 16px solid #1E90FF;
+        border-radius: 50%;
+        width: 120px;
+        height: 120px;
+        animation: spin 2s linear infinite;
+        margin: 0 auto;
+        display: none;
+      }
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      @keyframes rainbow {
+        0% {
+          color: red;
+        }
+        25% {
+          color: orange;
+        }
+        50% {
+          color: yellow;
+        }
+        75% {
+          color: green;
+        }
+        100% {
+          color: blue;
+        }
+      }
+    </style>
+    <script>
+      const showIP = () => {
+        const loaderElement = document.querySelector('.loader');
+        const countdownElement = document.getElementById('countdown');
+        const ipElement = document.getElementById('ip');
+
+        fetch('https://api.ipify.org')
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Failed to retrieve IP address');
+            }
+            return response.text();
+          })
+          .then(ip => {
+            loaderElement.style.display = 'none';
+            countdownElement.style.display = 'none';
+            ipElement.innerHTML = ip;
+          })
+          .catch(error => {
+            console.error(error);
+            loaderElement.style.display = 'none';
+            countdownElement.style.display = 'none';
+            ipElement.innerHTML = 'Error retrieving IP address';
+          });
+      };
+
+      const startTimer = () => {
+        const countdownElement = document.getElementById('countdown');
+        const messageElement = document.getElementById('message');
+        const loaderElement = document.querySelector('.loader');
+
+        let count = 5;
+        countdownElement.innerHTML = count;
+
+        const interval = setInterval(() => {
+          count--;
+          countdownElement.innerHTML = count;
+
+          if (count === 0) {
+            clearInterval(interval);
+            messageElement.style.display = 'none';
+            loaderElement.style.display = 'block';
+            showIP();
+          }
+        }, 1000);
+      };
+    </script>
+  </head>
+  <body onload="startTimer()">
+    <h1>Get Your IP Address</h1>
+    <div id="message">Your IP address will be shown in:</div>
+    <div id="countdown"></div>
+    <div class="loader"></div>
+    <div id="ip"></div>
+  </body>
+</html>
